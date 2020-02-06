@@ -23,6 +23,11 @@ let legendary = "False";
 let margin = { top: 40, right: 40, bottom: 40, left: 40 },
     height = 600 - margin.top - margin.bottom,
     width = 1000 - margin.right - margin.left;
+    
+    // Define the div for the tooltip
+let div = d3.select("body").append("div")	
+    .attr("class", "tooltip")				
+    .style("opacity", 0);
 
 let svg = d3.select('#myChart')
     .append('svg')
@@ -65,6 +70,18 @@ d3.csv("./pokemon.csv", function (data) {
         .attr("cx", function (d) { return x(d["Sp. Def"]); })
         .attr("cy", function (d) { return y(d.Total); })
         .attr("r", 10)
-        .style("fill", function (d) { return colors[d['Type 1']]; })
+        .style("fill", function (d) { return colors[d['Type 1']]
+        .on("mouseover", function(d) {		
+            div.transition()		
+                .duration(200)		
+                .style("opacity", .9);		
+            div	.html("tip<br/>tip")	
+                .style("left", (d3.event.pageX) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px");	
+            })					
+        .on("mouseout", function(d) {		
+            div.transition()		
+                .duration(500)		
+                .style("opacity", 0);; })
 
 })
