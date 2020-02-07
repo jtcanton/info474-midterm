@@ -17,16 +17,18 @@ const colors = {
     "Water": "#D37295"
 }
 
-let gen = 6;
-let legendary = "False";
+let gen = 1;
+let legendary = "True";
+let totalMax = 0;
+let sDefMax = 0;
 
 let margin = { top: 40, right: 40, bottom: 40, left: 40 },
-    height = 600 - margin.top - margin.bottom,
-    width = 1000 - margin.right - margin.left;
-    
-    // Define the div for the tooltip
-let div = d3.select("body").append("div")	
-    .attr("class", "tooltip")				
+    height = 500 - margin.top - margin.bottom,
+    width = 1200 - margin.right - margin.left;
+
+// Define the div for the tooltip
+let div = d3.select("body").append("div")
+    .attr("class", "tooltip")
     .style("opacity", 0);
 
 let svg = d3.select('#myChart')
@@ -40,15 +42,37 @@ let svg = d3.select('#myChart')
 //read in pokemon data
 d3.csv("./pokemon.csv", function (data) {
 
-    console.log(data.filter(function(d) { return d.Generation == gen && d["Legendary"] == "True"; }));
+    //console.log(data.filter(function (d) { return d.Generation == gen && d["Legendary"] == "True"; }));
 
+    //function to filter the data
     function getFilteredData(param, leg) {
-        return data.filter(function(d) { return d.Generation == param && d.Legendary == leg; });
+        return data.filter(function (d) { return d.Generation == param && d.Legendary == leg; });
+    }
+
+    let temp = getFilteredData(gen, legendary);
+    let res1 = temp.map(a => a.Total);
+    let res2 = temp.map(b => b["Sp. Def"]);
+    totalMax = Math.max(...res1);
+    sDefMax = Math.max(...res2);
+    let totalMin = Math.min(...res1);
+    let sDefMin = Math.min(...res2);
+    
+
+    function hasUpperCase(str) {
+        //console.log(str.to);
+        return (/[A-Z]/.test(str));
+    }
+
+    function filterName(str){ 
+        if(hasUpperCase(String(str).substr(1))){
+            return "*";
+        } 
+        return str;
     }
 
     // Add X axis
     var x = d3.scaleLinear()
-        .domain([15, 160])
+        .domain([sDefMin - 10, sDefMax + 10])
         .range([0, width]);
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
@@ -56,7 +80,7 @@ d3.csv("./pokemon.csv", function (data) {
 
     // Add Y axis
     var y = d3.scaleLinear()
-        .domain([150, 800])
+        .domain([totalMin - 10, totalMax + 20])
         .range([height, 0]);
     svg.append("g")
         .call(d3.axisLeft(y));
@@ -70,18 +94,22 @@ d3.csv("./pokemon.csv", function (data) {
         .attr("cx", function (d) { return x(d["Sp. Def"]); })
         .attr("cy", function (d) { return y(d.Total); })
         .attr("r", 10)
-        .style("fill", function (d) { return colors[d['Type 1']]
-        .on("mouseover", function(d) {		
-            div.transition()		
-                .duration(200)		
-                .style("opacity", .9);		
-            div	.html("tip<br/>tip")	
-                .style("left", (d3.event.pageX) + "px")		
-                .style("top", (d3.event.pageY - 28) + "px");	
-            })					
-        .on("mouseout", function(d) {		
-            div.transition()		
-                .duration(500)		
-                .style("opacity", 0);; })
+        .style("fill", function (d) {
+            return colors[d['Type 1']]
+        })
+        .on("mouseover", function (d) {
+            //console.log(d3.event.pageX + " " + d3.event.pageY);
+            div.transition()
+                .duration(200)
+                .style("opacity", .9);
+            div.html(filterName(d.Name) + "<br/>" + d["Type 1"] + "<br/>" + d["Type 2"])
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+        })
+        .on("mouseout", function (d) {
+            div.transition()
+                .duration(500)
+                .style("opacity", 0);
+        })
 
 })
