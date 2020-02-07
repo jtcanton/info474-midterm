@@ -16,11 +16,16 @@
             padding: 6px;
             font: 12px sans-serif;
             background: white;
-            border: 1px solid grey;
             border-radius: 2px;
             pointer-events: none;
             min-height: 0;
             min-width: 0;
+        }
+
+        .radio-container {
+            position: absolute;
+            top: 50px;
+            left: 1200px;
         }
     </style>
 
@@ -29,6 +34,22 @@
 <body>
     <div id="myChart"></div>
     <div class="tooltip"></div>
+    <div class="radio-container">
+        <p>Legendary</p>
+        <input type="checkbox" name="All" value="All"> All<br>
+        <input type="checkbox" name="True" value="True"> True<br>
+        <input type="checkbox" name="False" value="False"> False<br>
+        <p>Generation</p>
+        <select id="sel">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5" selected="selected">5</option>
+            <option value="6">6</option>
+          </select>
+    </div>
+    <div id="legend"></div>
 </body>
 <script src="https://d3js.org/d3.v4.js"></script>
 <script src="chart.js"></script>

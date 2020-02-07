@@ -1,29 +1,44 @@
 //dictionary for pokemon colors
 const colors = {
-    "Bug": "#4E79A7",
-    "Dark": "#A0CBE8",
-    "Electric": "#F28E2B",
-    "Fairy": "#FFBE7D",
-    "Fighting": "#59A14F",
-    "Fire": "#8CD17D",
-    "Ghost": "#B6992D",
-    "Grass": "#499894",
-    "Ground": "#86BCB6",
+    "Bug": "#6a7dab",
+    "Dark": "#9bc4cf",
+    "Electric": "#edaf77",
+    "Fairy": "#9c7bba",
+    "Fighting": "#216e03",
+    "Fire": "#f5d65b",
+    "Flying": "#babbe8",
+    "Ghost": "#a69a46",
+    "Grass": "#85c9a6",
+    "Ground": "#3b9481",
     "Ice": "#a6f2ff",
-    "Normal": "#E15759",
-    "Poison": "#FF9D9A",
-    "Psychic": "#79706E",
-    "Steel": "#BAB0AC",
-    "Water": "#D37295"
+    "Normal": "#cc415d",
+    "Poison": "#ed8298",
+    "Psychic": "#7a7a7a",
+    "Steel": "#964e6e",
+    "Water": "#edb4da",
+    "Dragon": "#de8431",
+    "Rock": "#c9c9c9"
+
 }
 
-let gen = 1;
-let legendary = "True";
+let globalData;
+var v = document.getElementById("sel");
+let gen = v.options[v.selectedIndex].value;
+console.log(gen);
+let legendary = "False";
 let totalMax = 0;
 let sDefMax = 0;
 
+document.getElementById('sel').addEventListener("change", function () {
+    var e = document.getElementById("sel");
+    var val = e.options[e.selectedIndex].value;
+    gen = val;
+    console.log(val);
+    makeGraph(globalData);
+})
+
 let margin = { top: 40, right: 40, bottom: 40, left: 40 },
-    height = 500 - margin.top - margin.bottom,
+    height = 650 - margin.top - margin.bottom,
     width = 1200 - margin.right - margin.left;
 
 // Define the div for the tooltip
@@ -40,7 +55,12 @@ let svg = d3.select('#myChart')
         "translate(" + margin.left + "," + margin.top + ")");
 
 //read in pokemon data
-d3.csv("./pokemon.csv", function (data) {
+d3.csv("./pokemon.csv", (data) => makeGraph(data));
+
+function makeGraph(data) {
+
+    globalData = data;
+    svg.selectAll("*").remove();
 
     //console.log(data.filter(function (d) { return d.Generation == gen && d["Legendary"] == "True"; }));
 
@@ -56,17 +76,17 @@ d3.csv("./pokemon.csv", function (data) {
     sDefMax = Math.max(...res2);
     let totalMin = Math.min(...res1);
     let sDefMin = Math.min(...res2);
-    
+
 
     function hasUpperCase(str) {
         //console.log(str.to);
         return (/[A-Z]/.test(str));
     }
 
-    function filterName(str){ 
-        if(hasUpperCase(String(str).substr(1))){
+    function filterName(str) {
+        if (hasUpperCase(String(str).substr(1))) {
             return "*";
-        } 
+        }
         return str;
     }
 
@@ -85,6 +105,39 @@ d3.csv("./pokemon.csv", function (data) {
     svg.append("g")
         .call(d3.axisLeft(y));
 
+    // gridlines in x axis function
+    function make_x_gridlines() {
+        return d3.axisBottom(x)
+            .ticks(20)
+    }
+
+    // gridlines in y axis function
+    function make_y_gridlines() {
+        return d3.axisLeft(y)
+            .ticks(10)
+    }
+
+    // add the X gridlines
+    svg.append("g")
+        .attr("class", "grid")
+        .attr("transform", "translate(0," + height + ")")
+        .call(make_x_gridlines()
+            .tickSize(-height)
+            .tickFormat("")
+        )
+
+    // add the Y gridlines
+    svg.append("g")
+        .attr("class", "grid")
+        .call(make_y_gridlines()
+            .tickSize(-width)
+            .tickFormat("")
+        )
+
+    d3.selectAll(".grid line")
+        .attr("stroke", "lightgray");
+
+
     // Add dots
     svg.append('g')
         .selectAll("dot")
@@ -94,22 +147,26 @@ d3.csv("./pokemon.csv", function (data) {
         .attr("cx", function (d) { return x(d["Sp. Def"]); })
         .attr("cy", function (d) { return y(d.Total); })
         .attr("r", 10)
+        .style("stroke", "#5885cc")
         .style("fill", function (d) {
             return colors[d['Type 1']]
         })
         .on("mouseover", function (d) {
             //console.log(d3.event.pageX + " " + d3.event.pageY);
             div.transition()
-                .duration(200)
+                .style("border", "1px solid grey")
+                //.duration(200)
                 .style("opacity", .9);
-            div.html(filterName(d.Name) + "<br/>" + d["Type 1"] + "<br/>" + d["Type 2"])
+            div.html(d.Name + "<br/>" + d["Type 1"] + "<br/>" + d["Type 2"])
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
         })
         .on("mouseout", function (d) {
             div.transition()
-                .duration(500)
-                .style("opacity", 0);
+                .duration(300)
+                .style("opacity", 0)
+                .style("border", "0px");
         })
 
-})
+
+}
