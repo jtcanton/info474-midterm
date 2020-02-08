@@ -204,7 +204,7 @@ function makeGraph(data) {
         div1.style.position = "absolute";
         div1.style.left = childX + "px"; 
         div1.style.top = ChildY + "px";
-        div1.style.border = "1px solid black";
+        
         div1.style.width = "125px";
         div1.style.height = "20px";
         div1.style.padding = "4px";
