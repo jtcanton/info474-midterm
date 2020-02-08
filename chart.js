@@ -25,7 +25,7 @@ let globalData;
 var v = document.getElementById("sel");
 let gen = 1; //v.options[v.selectedIndex].value;
 console.log(gen);
-let legendary = "False";
+let legendary = "All";
 let totalMax = 0;
 let sDefMax = 0;
 
