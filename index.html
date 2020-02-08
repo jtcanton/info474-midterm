@@ -32,13 +32,17 @@
 </head>
 
 <body>
+    
+    <div id="legend"></div>
     <div id="myChart"></div>
     <div class="tooltip"></div>
     <div class="radio-container">
         <p>Legendary</p>
-        <input type="checkbox" name="All" value="All"> All<br>
-        <input type="checkbox" name="True" value="True"> True<br>
-        <input type="checkbox" name="False" value="False"> False<br>
+        <select id="legSel">
+            <option value="All">All</option>
+            <option value="True">True</option>
+            <option value="False">False</option>
+        </select>
         <p>Generation</p>
         <select id="sel">
             <option value="1">1</option>
@@ -47,7 +51,7 @@
             <option value="4">4</option>
             <option value="5" selected="selected">5</option>
             <option value="6">6</option>
-          </select>
+        </select>
     </div>
     <div id="legend"></div>
 </body>

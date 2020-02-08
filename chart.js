@@ -23,7 +23,7 @@ const colors = {
 
 let globalData;
 var v = document.getElementById("sel");
-let gen = v.options[v.selectedIndex].value;
+let gen = 1; //v.options[v.selectedIndex].value;
 console.log(gen);
 let legendary = "False";
 let totalMax = 0;
@@ -33,12 +33,20 @@ document.getElementById('sel').addEventListener("change", function () {
     var e = document.getElementById("sel");
     var val = e.options[e.selectedIndex].value;
     gen = val;
-    console.log(val);
+    //console.log(val);
+    makeGraph(globalData);
+})
+
+document.getElementById('legSel').addEventListener("change", function () {
+    var e = document.getElementById("legSel");
+    var val = e.options[e.selectedIndex].value;
+    legendary = val;
+    //console.log(val);
     makeGraph(globalData);
 })
 
 let margin = { top: 40, right: 40, bottom: 40, left: 40 },
-    height = 650 - margin.top - margin.bottom,
+    height = 800 - margin.top - margin.bottom,
     width = 1200 - margin.right - margin.left;
 
 // Define the div for the tooltip
@@ -59,17 +67,32 @@ d3.csv("./pokemon.csv", (data) => makeGraph(data));
 
 function makeGraph(data) {
 
-    globalData = data;
+    if (globalData == null) {
+        globalData = data;
+    }
     svg.selectAll("*").remove();
 
     //console.log(data.filter(function (d) { return d.Generation == gen && d["Legendary"] == "True"; }));
 
     //function to filter the data
     function getFilteredData(param, leg) {
-        return data.filter(function (d) { return d.Generation == param && d.Legendary == leg; });
+        // if 
+        if (leg == "All" && param != "All") {
+            return data.filter(function (d) { return d.Generation == param; });
+        }
+        if (leg != "All" && param == "All") {
+            return data.filter(function (d) { return d.Generation == param; });
+        } if (leg != "All" && param != "All") {
+            return data.filter(function (d) { return d.Generation == param && d.Legendary == leg; });
+        } else {
+            return data;
+        }
     }
 
+    //filtered data
     let temp = getFilteredData(gen, legendary);
+
+    //set up the max and min for each of the axes
     let res1 = temp.map(a => a.Total);
     let res2 = temp.map(b => b["Sp. Def"]);
     totalMax = Math.max(...res1);
@@ -77,18 +100,12 @@ function makeGraph(data) {
     let totalMin = Math.min(...res1);
     let sDefMin = Math.min(...res2);
 
+    //array for legend
+    let types = temp.map(a => a["Type 1"]);
+    types = [...new Set(types)];
 
-    function hasUpperCase(str) {
-        //console.log(str.to);
-        return (/[A-Z]/.test(str));
-    }
+    console.log(types);
 
-    function filterName(str) {
-        if (hasUpperCase(String(str).substr(1))) {
-            return "*";
-        }
-        return str;
-    }
 
     // Add X axis
     var x = d3.scaleLinear()
@@ -167,6 +184,56 @@ function makeGraph(data) {
                 .style("opacity", 0)
                 .style("border", "0px");
         })
+
+    document.getElementById("legend").innerHTML = "";
+
+    d3.select("#legend")
+        .style("width", "160px")
+        .style("height", "560px")
+        .style("position", "absolute")
+        .style("top", "200px")
+        .style("left", "1200px");
+
+    let childX = 10;
+    let ChildY = 15;
+
+    for (let i = 0; i < types.length; i++) {
+        var div1 = document.createElement('div');
+        document.getElementById('legend').appendChild(div1);
+        div1.id = 'div1';
+        div1.style.position = "absolute";
+        div1.style.left = childX + "px"; 
+        div1.style.top = ChildY + "px";
+        div1.style.border = "1px solid black";
+        div1.style.width = "125px";
+        div1.style.height = "20px";
+        div1.style.padding = "4px";
+        div1.style.backgroundColor = colors[types[i]];
+        div1.style.color = "white";
+        div1.innerHTML = types[i];
+        div1.style.zIndex = 500;
+
+        ChildY += 33;
+    }
+
+
+
+
+    // svg.append('g')
+    //     .selectAll("rect")
+    //     .data(types)
+    //     .enter()
+    //     .append('rect')
+    // .attr("cx", function (d) { return x(d["Sp. Def"]); })
+    // .attr("cy", function (d) { return y(d.Total); })
+    //     .style("position", "absolute")
+    //     .style("top", "200px")
+    //     .style("left", "1200px")
+    // .style("width", "16px")
+    // .style("height", "16px")
+    //     .style("border", "2px solid black")
+
+
 
 
 }
