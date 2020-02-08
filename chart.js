@@ -209,7 +209,7 @@ function makeGraph(data) {
         div1.style.height = "20px";
         div1.style.padding = "4px";
         div1.style.backgroundColor = colors[types[i]];
-        div1.style.color = "white";
+        div1.style.color = "#16287d";
         div1.innerHTML = types[i];
         div1.style.zIndex = 500;
 
