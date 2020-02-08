@@ -1,3 +1,8 @@
+/* 
+* Author: Joshua Canton
+* Desc:   INFO 474, Midterm, Winter 2020
+*/
+
 //dictionary for pokemon colors
 const colors = {
     "Bug": "#6a7dab",
@@ -115,12 +120,37 @@ function makeGraph(data) {
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
 
+
+
+    svg.append("text")
+        .attr("id", "blah")     // text label for the x axis
+        .style("text-anchor", "middle")
+        .text("Total");
+
+    svg.selectAll("#blah")
+        .style("text-anchor", "end")
+        .attr("dx", "-370px")
+        .attr("dy", "-25px")
+        .attr("transform", function (d) {
+            return "rotate(-90)"
+        });
+
     // Add Y axis
     var y = d3.scaleLinear()
         .domain([totalMin - 10, totalMax + 20])
         .range([height, 0]);
     svg.append("g")
         .call(d3.axisLeft(y));
+
+    svg.append("text")
+        .attr("id", "blah2")     // text label for the y axis
+        .style("text-anchor", "middle")
+        .text("Sp. Def");
+
+    svg.selectAll("#blah2")
+        .style("text-anchor", "end")
+        .attr("dx", "580px")
+        .attr("dy", "750px");
 
     // gridlines in x axis function
     function make_x_gridlines() {
@@ -202,9 +232,9 @@ function makeGraph(data) {
         document.getElementById('legend').appendChild(div1);
         div1.id = 'div1';
         div1.style.position = "absolute";
-        div1.style.left = childX + "px"; 
+        div1.style.left = childX + "px";
         div1.style.top = ChildY + "px";
-        
+
         div1.style.width = "125px";
         div1.style.height = "20px";
         div1.style.padding = "4px";
